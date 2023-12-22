@@ -234,7 +234,8 @@ group:admin:marck@pam::
 acl:1:/:@admin:Administrator:
 EOF
 
-
+sed -i 's/quiet/quiet intel_iommu=on iommu=pt pcie_acs_override=downstream/g' /etc/default/grub
+update-grub
 reboot
 
 
