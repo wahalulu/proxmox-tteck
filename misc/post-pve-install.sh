@@ -203,21 +203,6 @@ EOF
     ;;
   esac
 
-  CHOICE=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "REBOOT" --menu "\nReboot Proxmox VE now? (recommended)" 11 58 2 \
-    "yes" " " \
-    "no" " " 3>&2 2>&1 1>&3)
-  case $CHOICE in
-  yes)
-    msg_info "Rebooting Proxmox VE"
-    sleep 2
-    msg_ok "Completed Post Install Routines"
-    reboot
-    ;;
-  no)
-    msg_error "Selected no to Rebooting Proxmox VE (Reboot recommended)"
-    msg_ok "Completed Post Install Routines"
-    ;;
-  esac
 }
 
 header_info
@@ -238,3 +223,21 @@ if ! command -v pveversion >/dev/null 2>&1; then
 fi
 
 start_routines
+groupadd -g 1000 admin
+groupadd -g 1001 nfsaccess
+useradd -m -s /bin/bash -g admin -G nfsaccess -G sudo marck
+useradd -g nfsaccess nfsdata
+echo "marck ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/marck
+cat <<EOF >> /etc/pve/user.cfg
+user:marck@pam:1:0:Marck:Vaisman:marck@vaisman.us:::
+group:admin:marck@pam::
+acl:1:/:@admin:Administrator:
+EOF
+
+
+reboot
+
+
+
+
+
